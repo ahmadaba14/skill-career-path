@@ -38,7 +38,7 @@ Fields covered: design and UX, software, data and AI, product, finance, HR, mark
 ### From GitHub (quickest)
 
 ```bash
-npx skills add ahmadaba14/career-path
+npx skills add ahmadaba14/skill-career-path
 ```
 
 The `skills` command finds `SKILL.md`, detects the AI coding tools you have installed (Claude Code, Codex, Cursor and many more), and installs the skill for each. Useful options:
@@ -47,7 +47,7 @@ The `skills` command finds `SKILL.md`, detects the AI coding tools you have inst
 - `-a claude-code` installs for one tool only (swap in another tool's name).
 - `--list` shows what is in the repo without installing.
 
-Example: `npx skills add ahmadaba14/career-path -g -a claude-code`
+Example: `npx skills add ahmadaba14/skill-career-path -g -a claude-code`
 
 Note: this command needs Node.js, and the tool collects anonymous usage data (see its own docs to opt out).
 
