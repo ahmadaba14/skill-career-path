@@ -1,0 +1,721 @@
+{
+  "person": {
+    "name": "Sample Person",
+    "currentRole": "Senior UI/UX Designer",
+    "summary": "Six years in product design with strong frontend skills and design-system experience in B2B software."
+  },
+  "horizonYears": 10,
+  "assumptions": [
+    "Wants to keep building rather than manage a large team",
+    "Open to moving countries after year 3",
+    "Can spend about 5 hours a week on study"
+  ],
+  "recommendedPathId": "engineer",
+  "runnerUpPathId": "lead",
+  "rationale": "Design engineering fits your frontend skill and your wish to keep building. Demand for people who bridge design and code is strong, and it needs only light formal study. If you find you enjoy mentoring more than shipping, the design leadership path becomes the better call.",
+  "paths": [
+    {
+      "id": "engineer",
+      "title": "Design engineering specialist",
+      "tagline": "Bridge design and production code, then own a design platform",
+      "fit": "Strong",
+      "tradeoffs": "Needs deep frontend skill and patience. You may earn less than a pure engineer in the first two years.",
+      "nodes": [
+        {
+          "id": "e-c1",
+          "type": "cert",
+          "title": "Frontend framework course",
+          "year": 1,
+          "summary": "Build production-grade components in React and TypeScript.",
+          "provider": "Sample provider",
+          "url": "https://aws.amazon.com/certification/certified-solutions-architect-associate/"
+        },
+        {
+          "id": "e-1",
+          "type": "role",
+          "title": "Design Engineer",
+          "year": 2,
+          "summary": "Ship components and prototypes in code alongside designers and engineers.",
+          "gate": "A public component library or shipped feature",
+          "skills": [
+            "TypeScript",
+            "React",
+            "Accessibility",
+            "Testing"
+          ],
+          "certs": [
+            {
+              "name": "AWS Certified Solutions Architect Associate (sample)",
+              "why": "Placeholder credential to show the link layout",
+              "duration": "3 to 4 months",
+              "cost": "varies",
+              "provider": "AWS",
+              "url": "https://aws.amazon.com/certification/certified-solutions-architect-associate/"
+            }
+          ],
+          "outlook": "emerging",
+          "outlookNote": "Design engineer is a fast-growing hybrid as AI speeds up screen production and companies want people who ship UI in code.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        },
+        {
+          "id": "e-2",
+          "type": "role",
+          "title": "Senior Design Engineer",
+          "year": 4.5,
+          "summary": "Own the design system's code and tokens pipeline.",
+          "gate": "Adoption of your system across teams",
+          "skills": [
+            "Design tokens",
+            "CI for UI",
+            "Performance"
+          ],
+          "outlook": "growing",
+          "outlookNote": "Design systems ownership grows in value as AI-generated UI needs consistent components and tokens.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        },
+        {
+          "id": "e-3",
+          "type": "role",
+          "title": "Staff Design Engineer",
+          "year": 7.5,
+          "summary": "Set UI platform direction across products.",
+          "gate": "Cross-team influence and measurable speed gains",
+          "outlook": "growing",
+          "outlookNote": "Staff-level platform roles stay scarce and valued; they set the rules AI tools build against.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        },
+        {
+          "id": "e-4",
+          "type": "role",
+          "title": "Principal / Head of Design Systems",
+          "year": 10,
+          "summary": "Define how the company builds interfaces.",
+          "outlook": "growing",
+          "outlookNote": "Leads of design systems and UI platforms become the owners of how AI-built interfaces stay on brand.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+          "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+          "kind": "agency",
+          "where": "Section: Job Outlook",
+          "note": "Sample link"
+        }
+      ]
+    },
+    {
+      "id": "lead",
+      "title": "Design leadership",
+      "tagline": "Move into managing designers and design strategy",
+      "fit": "Mixed",
+      "tradeoffs": "Fewer roles at each step, and less hands-on work.",
+      "nodes": [
+        {
+          "id": "l-1",
+          "type": "role",
+          "title": "Design Lead",
+          "year": 2,
+          "summary": "Lead a small squad while staying hands-on.",
+          "gate": "Proven mentoring and ownership of a product area",
+          "outlook": "evolving",
+          "outlookNote": "Design leads spend less time reviewing mockups and more on judging AI output and coaching.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        },
+        {
+          "id": "l-e1",
+          "type": "education",
+          "title": "Leadership program",
+          "year": 3,
+          "summary": "Short management program for first-time managers.",
+          "provider": "Sample provider",
+          "url": "https://aws.amazon.com/certification/certified-solutions-architect-associate/"
+        },
+        {
+          "id": "l-2",
+          "type": "role",
+          "title": "Design Manager",
+          "year": 4.5,
+          "summary": "Manage designers, hiring and design quality.",
+          "gate": "A team that delivers without you in every review",
+          "outlook": "stable",
+          "outlookNote": "Managers of designers stay needed, but teams get smaller, so there are fewer openings.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        },
+        {
+          "id": "l-3",
+          "type": "role",
+          "title": "Director of Design",
+          "year": 8,
+          "summary": "Own design strategy and budget.",
+          "outlook": "stable",
+          "outlookNote": "Director roles persist and move toward strategy and AI governance; the number of roles shrinks as teams shrink.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+          "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+          "kind": "agency",
+          "where": "Section: Job Outlook",
+          "note": "Sample link"
+        }
+      ]
+    },
+    {
+      "id": "pm",
+      "title": "Product management pivot",
+      "tagline": "Use user insight to own what gets built",
+      "fit": "Good",
+      "forksFrom": {
+        "pathId": "lead",
+        "nodeId": "l-1"
+      },
+      "tradeoffs": "You take a step down in seniority at first. You need to learn metrics and roadmapping.",
+      "nodes": [
+        {
+          "id": "p-c1",
+          "type": "cert",
+          "title": "Product management course",
+          "year": 3,
+          "summary": "Learn discovery, prioritisation and metrics.",
+          "provider": "Sample provider",
+          "url": "https://aws.amazon.com/certification/certified-solutions-architect-associate/"
+        },
+        {
+          "id": "p-1",
+          "type": "role",
+          "title": "Product Manager",
+          "year": 4,
+          "summary": "Own a feature area end to end.",
+          "gate": "Internal move or strong product portfolio",
+          "outlook": "evolving",
+          "outlookNote": "PMs prototype and analyse with AI and are expected to cover more design and data work.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        },
+        {
+          "id": "p-2",
+          "type": "role",
+          "title": "Senior Product Manager",
+          "year": 6.5,
+          "summary": "Own a product line and its strategy.",
+          "outlook": "growing",
+          "outlookNote": "Senior PMs who own AI-enabled products are in demand.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        },
+        {
+          "id": "p-3",
+          "type": "role",
+          "title": "Director of Product",
+          "year": 9.5,
+          "summary": "Run a product group.",
+          "outlook": "stable",
+          "outlookNote": "Directors of product persist; scope shifts toward portfolio and AI strategy.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+          "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+          "kind": "agency",
+          "where": "Section: Job Outlook",
+          "note": "Sample link"
+        }
+      ]
+    },
+    {
+      "id": "build",
+      "title": "Independent studio",
+      "tagline": "Freelance, then a small product or consulting studio",
+      "fit": "Good",
+      "tradeoffs": "Income is uneven at first and you need sales skills.",
+      "nodes": [
+        {
+          "id": "b-1",
+          "type": "role",
+          "title": "Freelance Designer-Developer",
+          "year": 2.5,
+          "summary": "Take client work that mixes design and code.",
+          "gate": "Three referenceable clients",
+          "outlook": "evolving",
+          "outlookNote": "Freelance work moves from screen production to design-plus-code and AI-workflow consulting as basic mockup work is automated.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        },
+        {
+          "id": "b-2",
+          "type": "role",
+          "title": "Studio Founder",
+          "year": 6,
+          "summary": "Hire a small team and productise services.",
+          "outlook": "evolving",
+          "outlookNote": "Studios survive by selling outcomes and expertise, not hours of production.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        },
+        {
+          "id": "b-3",
+          "type": "role",
+          "title": "Product Founder",
+          "year": 9,
+          "summary": "Launch your own product.",
+          "outlook": "emerging",
+          "outlookNote": "Small teams with AI tools can launch products, which makes founding more accessible and more crowded.",
+          "sources": [
+            {
+              "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+              "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+              "kind": "agency",
+              "where": "Section: Job Outlook",
+              "note": "Sample link"
+            },
+            {
+              "title": "Sample job post",
+              "url": "https://example.com/jobs/design-engineer",
+              "kind": "job post",
+              "where": "Requirements section",
+              "note": "Placeholder"
+            }
+          ],
+          "jobPosts": {
+            "reviewed": 12,
+            "market": "Sample market",
+            "asOf": "2026-11",
+            "requirements": [
+              {
+                "text": "React and TypeScript",
+                "count": "10 of 12"
+              },
+              {
+                "text": "Design systems experience",
+                "count": "9 of 12"
+              },
+              {
+                "text": "Accessibility (WCAG)",
+                "count": "6 of 12"
+              }
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "title": "BLS Occupational Outlook: Web Developers and Digital Designers",
+          "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers-and-digital-designers.htm",
+          "kind": "agency",
+          "where": "Section: Job Outlook",
+          "note": "Sample link"
+        }
+      ]
+    }
+  ]
+}

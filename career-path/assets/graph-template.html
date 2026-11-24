@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__PAGE_TITLE__</title>
+<style>
+  :root {
+    --bg: #f4f5f3; --dot: #d5d8dc; --surface: #ffffff; --surface-2: #f6f7f6; --text: #1f2328; --muted: #5a636d;
+    --line: #b9bfc6; --grid: #e3e6e9; --accent: #0b6e4f; --accent-soft: #e1f4ec; --on-accent: #ffffff;
+    --shadow: 0 2px 6px rgba(0,0,0,.08), 0 10px 30px rgba(0,0,0,.10);
+    --o-growing: #16794a; --o-emerging: #1d5fd1; --o-evolving: #a15c00; --o-stable: #5a636d; --o-declining: #b3261e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101316; --dot: #232830; --surface: #1a1e23; --surface-2: #20252b; --text: #e8eaed; --muted: #9ca5af;
+      --line: #4b535c; --grid: #20252b; --accent: #4cc9a0; --accent-soft: #15332a; --on-accent: #0b1f18;
+      --shadow: 0 2px 6px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.45);
+      --o-growing: #4cc98a; --o-emerging: #6ea2ff; --o-evolving: #e0a43a; --o-stable: #9ca5af; --o-declining: #ff8a80;
+    }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; margin: 0; overflow: hidden; }
+  body { background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+  /* Canvas fills the whole page */
+  #stage { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; outline: none; }
+  #stage.panning { cursor: grabbing; }
+  .gridline { stroke: var(--grid); stroke-width: 1.5; }
+  .axis-label { fill: var(--muted); font-size: 17px; text-anchor: middle; }
+  .band { fill: var(--surface); opacity: .55; }
+  .lane-title { font-size: 19px; font-weight: 700; fill: var(--text); text-anchor: end; cursor: pointer; outline: none; }
+  .lane-title.best { fill: var(--accent); }
+  .lane-title:hover, .lane-title:focus-visible { text-decoration: underline; }
+  .edge { fill: none; stroke: var(--line); stroke-width: 3; stroke-linecap: round; transition: opacity .2s; }
+  .edge.best { stroke: var(--accent); stroke-width: 6; }
+  .faded { opacity: .22; }
+  .node { cursor: pointer; outline: none; transition: opacity .2s; }
+  .node .shape { fill: var(--surface); stroke: var(--line); stroke-width: 3; }
+  .node.best-node .shape { stroke: var(--accent); stroke-width: 4; }
+  .node.best-node.role .shape { fill: var(--accent); }
+  .node.start .shape { fill: var(--text); stroke: var(--text); }
+  .node:hover .shape, .node:focus-visible .shape, .node.selected .shape { stroke: var(--text); stroke-width: 5; }
+  .node-label { font-size: 18px; fill: var(--text); text-anchor: middle; }
+  .node-label.small { font-size: 16px; fill: var(--muted); }
+  .node-label.strong { font-weight: 700; }
+  .node-year { font-size: 15.5px; fill: var(--muted); text-anchor: middle; }
+  .o-growing { fill: var(--o-growing); } .o-emerging { fill: var(--o-emerging); } .o-evolving { fill: var(--o-evolving); }
+  .o-stable { fill: var(--o-stable); } .o-declining { fill: var(--o-declining); }
+
+  /* Floating panels */
+  .panel { position: fixed; z-index: 5; background: var(--surface); border: 1px solid var(--grid); border-radius: 14px;
+    box-shadow: var(--shadow); overflow: auto; }
+  #left { top: 16px; left: 16px; bottom: 16px; width: 348px; padding: 20px; }
+  #right { top: 16px; right: 16px; width: 372px; max-height: calc(100% - 32px); padding: 18px 20px 20px; }
+  .eyebrow { font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+  h1 { font-size: 1.35rem; line-height: 1.25; margin: 2px 0 6px; }
+  h2 { font-size: 1.05rem; margin: 2px 0 6px; line-height: 1.3; }
+  h3 { font-size: 1.1rem; margin: 2px 0 2px; line-height: 1.3; }
+  h4 { margin: 16px 0 4px; font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  p { margin: 6px 0; }
+  .muted { color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; padding: 0; list-style: none; }
+  .chips li { background: var(--surface-2); border: 1px solid var(--grid); border-radius: 999px; padding: 2px 10px; font-size: .8rem; color: var(--muted); }
+  .rec { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; margin: 16px 0 0; }
+  .rec .eyebrow { color: var(--accent); }
+  .rec p { font-size: .92rem; }
+  .link { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; font: inherit; text-decoration: underline; text-align: left; }
+  .pathlist { display: grid; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
+  .pathbtn { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; padding: 9px 12px; border-radius: 10px; cursor: pointer;
+    background: var(--surface-2); border: 1px solid var(--grid); color: var(--text); font: inherit; }
+  .pathbtn:hover, .pathbtn[aria-pressed="true"] { border-color: var(--text); }
+  .pathbtn .swatch { width: 12px; height: 12px; border-radius: 50%; border: 3px solid var(--line); flex: none; }
+  .pathbtn.best .swatch { background: var(--accent); border-color: var(--accent); }
+  .pathbtn .t { flex: 1; font-weight: 600; font-size: .92rem; line-height: 1.3; }
+  .pathbtn .f { font-size: .75rem; color: var(--muted); white-space: nowrap; }
+  .badge { display: inline-block; font-size: .74rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .badge.best { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .badge.o-growing, .badge.o-emerging, .badge.o-evolving, .badge.o-stable, .badge.o-declining { background: none; fill: none; }
+  .badge.growing { color: var(--o-growing); border-color: var(--o-growing); }
+  .badge.emerging { color: var(--o-emerging); border-color: var(--o-emerging); }
+  .badge.evolving { color: var(--o-evolving); border-color: var(--o-evolving); }
+  .badge.stable { color: var(--o-stable); border-color: var(--o-stable); }
+  .badge.declining { color: var(--o-declining); border-color: var(--o-declining); }
+  ul.plain { margin: 0; padding-left: 18px; } ul.plain li { margin: 3px 0; }
+  .cert { border-top: 1px solid var(--grid); padding: 8px 0; } .cert:first-child { border-top: 0; }
+  .cert b { display: block; } .cert small { color: var(--muted); display: block; }
+  a.ext { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; word-break: break-word; }
+  a.ext:hover { text-decoration-thickness: 2px; }
+  a.ext:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+  ul.sources { margin: 0; padding-left: 18px; font-size: .9rem; } ul.sources li { margin: 6px 0; }
+  .nolink { color: var(--muted); font-size: .85rem; }
+  .legend { display: grid; gap: 6px; font-size: .82rem; color: var(--muted); margin-top: 6px; }
+  .legend div { display: flex; align-items: center; gap: 8px; }
+  .legend svg { flex: none; }
+  .close { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--grid);
+    background: var(--surface-2); color: var(--text); cursor: pointer; font-size: 18px; line-height: 1; }
+  .close:hover { border-color: var(--text); }
+
+  /* Toolbar */
+  .toolbar { position: fixed; z-index: 6; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; align-items: center;
+    background: var(--surface); border: 1px solid var(--grid); border-radius: 999px; padding: 6px; box-shadow: var(--shadow); }
+  .toolbar button { min-width: 38px; height: 38px; border-radius: 999px; border: 0; background: transparent; color: var(--text); cursor: pointer; font: inherit; font-weight: 600; padding: 0 12px; }
+  .toolbar button:hover, .toolbar button[aria-pressed="true"] { background: var(--surface-2); }
+  .toolbar .hint { font-size: .78rem; color: var(--muted); padding: 0 10px 0 4px; white-space: nowrap; }
+  button:focus-visible, .pathbtn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  @media (max-width: 860px) {
+    #left { top: 12px; left: 12px; right: 12px; bottom: auto; width: auto; max-height: 55vh; }
+    #right { top: auto; left: 12px; right: 12px; bottom: 76px; width: auto; max-height: 45vh; }
+    .toolbar .hint { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .edge, .node { transition: none; } }
+</style>
+</head>
+<body>
+<svg id="stage" tabindex="0" role="group" aria-label="Career path graph. Drag to pan, scroll or pinch to zoom."></svg>
+
+<aside class="panel" id="left" aria-label="Overview"></aside>
+<aside class="panel" id="right" aria-live="polite" hidden></aside>
+
+<div class="toolbar" role="toolbar" aria-label="Canvas controls">
+  <button id="btn-overview" aria-pressed="true" title="Show or hide the overview panel">Overview</button>
+  <button id="btn-out" aria-label="Zoom out" title="Zoom out">&minus;</button>
+  <button id="btn-in" aria-label="Zoom in" title="Zoom in">+</button>
+  <button id="btn-fit" title="Fit the whole graph on screen">Fit</button>
+  <span class="hint">Drag to pan &middot; scroll to zoom &middot; click a step</span>
+</div>
+
+<script>
+const DATA = "__CAREER_DATA__";
+
+const NS = "http://www.w3.org/2000/svg";
+const SVG_TAGS = ["svg","g","path","circle","rect","line","text","tspan","title","defs","pattern"];
+const $ = (id) => document.getElementById(id);
+
+/* Build elements without innerHTML so text from the data can never inject markup. */
+function h(tag, attrs, ...kids) {
+  const e = SVG_TAGS.includes(tag) ? document.createElementNS(NS, tag) : document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+  }
+  for (const kid of kids.flat(Infinity)) {
+    if (kid === null || kid === undefined || kid === false) continue;
+    e.appendChild(typeof kid === "string" || typeof kid === "number" ? document.createTextNode(String(kid)) : kid);
+  }
+  return e;
+}
+/* Only http(s) links are allowed, so data can never smuggle in a javascript: URL. */
+function safeUrl(u) {
+  try { const x = new URL(String(u)); return x.protocol === "https:" || x.protocol === "http:" ? x.href : null; } catch (_) { return null; }
+}
+function ext(url, text) {
+  const href = safeUrl(url);
+  return href ? h("a", { class: "ext", href, target: "_blank", rel: "noopener noreferrer" }, text, " ↗") : null;
+}
+function sourceList(sources) {
+  const items = (sources || []).map((s) => {
+    const a = ext(s.url, s.title || s.url);
+    return a ? h("li", {}, s.kind ? h("span", { class: "badge" }, s.kind) : null, s.kind ? " " : null, a,
+      s.where ? h("div", { class: "muted" }, "Look at: " + s.where) : null,
+      s.note ? h("div", { class: "muted" }, s.note) : null) : null;
+  }).filter(Boolean);
+  return items.length ? [h("h4", {}, "Sources"), h("ul", { class: "sources" }, items)] : null;
+}
+function jobPostsBlock(jp) {
+  if (jp && !jp.requirements?.length && jp.note) return [h("h4", {}, "What employers ask for"), h("p", { class: "muted" }, jp.note)];
+  if (!jp || !jp.requirements?.length) return null;
+  return [h("h4", {}, "What employers ask for"),
+    h("p", { class: "muted" }, `${jp.reviewed || "?"} job posts read` + (jp.market ? ", " + jp.market : "") + (jp.asOf ? ", " + jp.asOf : "")),
+    h("ul", { class: "plain" }, jp.requirements.map((r) => h("li", {}, r.text, r.count ? h("span", { class: "muted" }, " – " + r.count) : null))),
+    jp.note ? h("p", { class: "muted" }, jp.note) : null];
+}
+function wrap(text, max, maxLines) {
+  const words = String(text).split(/\s+/); const lines = []; let cur = "";
+  for (const w of words) {
+    if ((cur + " " + w).trim().length > max && cur) { lines.push(cur); cur = w; } else cur = (cur + " " + w).trim();
+  }
+  if (cur) lines.push(cur);
+  if (lines.length > maxLines) { lines.length = maxLines; lines[maxLines - 1] = lines[maxLines - 1].replace(/.{0,2}$/, "") + "…"; }
+  return lines;
+}
+
+const OUTLOOK = { growing: "Growing", emerging: "Emerging", evolving: "Evolving", stable: "Stable", declining: "Declining" };
+const OUTLOOK_HELP = {
+  growing: "Demand is rising", emerging: "New role, not yet widespread", evolving: "Same role, changing work",
+  stable: "Little change expected", declining: "Likely to shrink or be replaced"
+};
+const horizon = DATA.horizonYears || 10;
+const recId = DATA.recommendedPathId;
+const paths = [...DATA.paths].sort((a, b) => (b.id === recId) - (a.id === recId));
+const pathById = Object.fromEntries(paths.map((p) => [p.id, p]));
+const recPath = pathById[recId];
+const runner = DATA.runnerUpPathId && pathById[DATA.runnerUpPathId];
+
+/* World layout (units are SVG user units; pan and zoom scale them) */
+const PX = 132, LANE = 215;
+const xOf = (year) => year * PX;
+const laneY = (i) => i * LANE;
+const start = { x: 0, y: ((paths.length - 1) * LANE) / 2 };
+const bandLeft = -150, bandRight = xOf(horizon) + 150;
+
+const stage = $("stage");
+const world = h("g", { id: "world" });
+stage.append(world);
+const gBands = h("g"), gGrid = h("g"), gEdges = h("g"), gNodes = h("g"), gTitles = h("g");
+world.append(gBands, gGrid, gEdges, gNodes, gTitles);
+
+for (let y = 0; y <= horizon; y++) {
+  gGrid.append(
+    h("line", { class: "gridline", x1: xOf(y), x2: xOf(y), y1: -LANE / 2 - 4, y2: laneY(paths.length - 1) + LANE / 2 + 4 }),
+    h("text", { class: "axis-label", x: xOf(y), y: -LANE / 2 - 18 }, y === 0 ? "Today" : "Year " + y)
+  );
+}
+
+const positions = {};
+paths.forEach((p, i) => {
+  gBands.append(h("rect", { class: "band", x: bandLeft, y: laneY(i) - LANE / 2 + 6, width: bandRight - bandLeft, height: LANE - 12, rx: 14, style: i % 2 ? "opacity:.25" : null }));
+  p.nodes.forEach((n) => { positions[n.id] = { x: xOf(n.year), y: laneY(i) }; });
+});
+
+/* Edges, with the recommended path drawn last so it sits on top */
+for (const p of [...paths].sort((a, b) => (a.id === recId) - (b.id === recId))) {
+  const best = p.id === recId;
+  const cls = "edge" + (best ? " best" : "");
+  const first = positions[p.nodes[0].id];
+  const origin = p.forksFrom && positions[p.forksFrom.nodeId] ? positions[p.forksFrom.nodeId] : start;
+  const dx = Math.max(50, (first.x - origin.x) / 2);
+  gEdges.append(h("path", { class: cls, "data-path": p.id, d: `M${origin.x} ${origin.y} C${origin.x + dx} ${origin.y}, ${first.x - dx} ${first.y}, ${first.x} ${first.y}` }));
+  for (let k = 1; k < p.nodes.length; k++) {
+    const a = positions[p.nodes[k - 1].id], b = positions[p.nodes[k].id];
+    gEdges.append(h("path", { class: cls, "data-path": p.id, d: `M${a.x} ${a.y} L${b.x} ${b.y}` }));
+  }
+}
+
+function nodeShape(n, best) {
+  if (n.type === "cert") return h("rect", { class: "shape", x: -10, y: -10, width: 20, height: 20, transform: "rotate(45)" });
+  if (n.type === "education") return h("rect", { class: "shape", x: -11, y: -11, width: 22, height: 22, rx: 3 });
+  return h("circle", { class: "shape", r: best ? 19 : 17 });
+}
+function addLabel(g, lines, y, cls) {
+  const t = h("text", { class: "node-label " + cls, y });
+  lines.forEach((ln, i) => t.append(h("tspan", { x: 0, dy: i === 0 ? 0 : 21 }, ln)));
+  g.append(t);
+}
+
+let selectedEl = null, focusPathId = null, suppressClick = false;
+const nodeEls = [];
+
+paths.forEach((p, i) => {
+  const best = p.id === recId;
+  p.nodes.forEach((n) => {
+    const pos = positions[n.id];
+    const g = h("g", { class: `node ${n.type}${best ? " best-node" : ""}`, "data-path": p.id, transform: `translate(${pos.x} ${pos.y})`,
+      tabindex: 0, role: "button", "aria-label": `${n.title}, year ${n.year}, ${p.title}${n.outlook ? ", outlook " + OUTLOOK[n.outlook] : ""}` });
+    g.append(nodeShape(n, best));
+    const lines = wrap(n.title, 18, 2);
+    if (n.type === "role") {
+      addLabel(g, lines, 46, "strong");
+      const yy = 46 + lines.length * 21 + 2;
+      g.append(h("text", { class: "node-year " + (n.outlook ? "o-" + n.outlook : ""), y: yy },
+        "Year " + n.year + (n.outlook ? " · " + OUTLOOK[n.outlook] : "")));
+    } else {
+      addLabel(g, lines, -26 - (lines.length - 1) * 21, "small");
+    }
+    g.addEventListener("click", () => { if (suppressClick) return; openNode(g, p, n); });
+    g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openNode(g, p, n); } });
+    gNodes.append(g); nodeEls.push(g);
+  });
+  const title = h("text", { class: "lane-title" + (best ? " best" : ""), "data-path": p.id, x: bandRight - 18, y: laneY(i) - LANE / 2 + 38, tabindex: 0, role: "button" },
+    (best ? "★ " : "") + p.title);
+  title.addEventListener("click", () => { if (!suppressClick) openPath(p.id); });
+  title.addEventListener("keydown", (e) => { if (e.key === "Enter") openPath(p.id); });
+  gTitles.append(title);
+});
+
+const startG = h("g", { class: "node start", transform: `translate(${start.x} ${start.y})`, tabindex: 0, role: "button", "aria-label": "Current position" });
+startG.append(h("circle", { class: "shape", r: 20 }));
+startG.append(h("text", { class: "node-label small", y: -32 }, "Today"));
+addLabel(startG, wrap(DATA.person?.currentRole || "Current role", 18, 4), 52, "strong");
+startG.addEventListener("click", () => { if (!suppressClick) openStart(startG); });
+startG.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openStart(startG); } });
+gNodes.append(startG);
+
+/* ---------- Panels ---------- */
+const left = $("left"), right = $("right");
+const narrow = () => window.matchMedia("(max-width: 860px)").matches;
+
+function legendShape(kind) {
+  const svg = h("svg", { width: 20, height: 20, viewBox: "0 0 20 20", "aria-hidden": "true" });
+  if (kind === "role") svg.append(h("circle", { cx: 10, cy: 10, r: 6, fill: "none", stroke: "currentColor", "stroke-width": 2.5 }));
+  if (kind === "cert") svg.append(h("rect", { x: 5, y: 5, width: 10, height: 10, transform: "rotate(45 10 10)", fill: "none", stroke: "currentColor", "stroke-width": 2.5 }));
+  if (kind === "education") svg.append(h("rect", { x: 4, y: 4, width: 12, height: 12, rx: 2, fill: "none", stroke: "currentColor", "stroke-width": 2.5 }));
+  return svg;
+}
+
+function buildLeft() {
+  left.replaceChildren(
+    h("div", { class: "eyebrow" }, horizon + "-year career path"),
+    h("h1", {}, DATA.person?.name || "Your career path"),
+    DATA.person?.currentRole ? h("p", {}, h("b", {}, DATA.person.currentRole)) : null,
+    DATA.person?.summary ? h("p", { class: "muted" }, DATA.person.summary) : null,
+    DATA.assumptions?.length ? h("ul", { class: "chips", "aria-label": "Assumptions" }, DATA.assumptions.map((a) => h("li", {}, a))) : null,
+    h("section", { class: "rec", "aria-label": "Recommended path" },
+      h("div", { class: "eyebrow" }, "Recommended path"),
+      h("h2", {}, recPath.title),
+      h("p", {}, DATA.rationale || recPath.tagline),
+      h("p", {}, h("button", { class: "link", onclick: () => openPath(recId) }, "Show this path on the graph")),
+      runner ? h("p", { class: "muted" }, "Runner-up: ", h("button", { class: "link", onclick: () => openPath(runner.id) }, runner.title)) : null
+    ),
+    h("h4", {}, "All paths"),
+    h("ul", { class: "pathlist" }, paths.map((p) => h("li", {},
+      h("button", { class: "pathbtn" + (p.id === recId ? " best" : ""), "data-path": p.id, "aria-pressed": "false", onclick: () => openPath(p.id) },
+        h("span", { class: "swatch" }), h("span", { class: "t" }, p.title),
+        h("span", { class: "f" }, p.id === recId ? "Recommended" : (p.fit ? "Fit: " + p.fit : "")))))),
+    h("h4", {}, "Reading the graph"),
+    h("div", { class: "legend" },
+      h("div", {}, legendShape("role"), "Role"),
+      h("div", {}, legendShape("cert"), "Certification"),
+      h("div", {}, legendShape("education"), "Degree or study"),
+      h("div", {}, h("svg", { width: 20, height: 20, "aria-hidden": "true" }, h("line", { x1: 2, y1: 10, x2: 18, y2: 10, stroke: "var(--accent)", "stroke-width": 5, "stroke-linecap": "round" })), "Recommended path")),
+    h("h4", {}, "Role outlook to year 10"),
+    h("div", { class: "legend" }, Object.keys(OUTLOOK).map((k) =>
+      h("div", {}, h("span", { class: "badge " + k }, OUTLOOK[k]), OUTLOOK_HELP[k])))
+  );
+}
+
+function setPressed(id) {
+  left.querySelectorAll(".pathbtn").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.path === id)));
+}
+function setFocus(id) {
+  focusPathId = id;
+  world.querySelectorAll("[data-path]").forEach((el) => {
+    if (el.classList.contains("lane-title")) return;
+    el.classList.toggle("faded", !!id && el.dataset.path !== id);
+  });
+  startG.classList.remove("faded");
+  setPressed(id);
+}
+function select(el) {
+  if (selectedEl) selectedEl.classList.remove("selected");
+  selectedEl = el; if (el) el.classList.add("selected");
+}
+function showRight(...items) {
+  right.replaceChildren(h("button", { class: "close", "aria-label": "Close details", onclick: clearSelection }, "×"), ...items.flat(Infinity).filter(Boolean));
+  right.hidden = false; right.scrollTop = 0;
+  if (narrow() && !left.hidden) setLeft(false);
+}
+function clearSelection() {
+  select(null); setFocus(null); right.hidden = true;
+}
+function fitBadge(p) {
+  return h("span", { class: "badge" + (p.id === recId ? " best" : "") }, p.id === recId ? "Recommended" : (p.fit ? "Fit: " + p.fit : "Option"));
+}
+
+function openPath(id) {
+  const p = pathById[id]; select(null); setFocus(id);
+  showRight(
+    h("div", { class: "eyebrow" }, "Path"), h("h3", {}, p.title), h("p", {}, fitBadge(p)),
+    p.tagline ? h("p", {}, p.tagline) : null,
+    p.id === recId && DATA.rationale ? [h("h4", {}, "Why this path"), h("p", {}, DATA.rationale)] : null,
+    p.tradeoffs ? [h("h4", {}, "Trade-offs"), h("p", {}, p.tradeoffs)] : null,
+    h("h4", {}, "Steps"),
+    h("ul", { class: "plain" }, p.nodes.map((n) => h("li", {}, `Year ${n.year}: ${n.title}`, n.outlook ? h("span", { class: "muted" }, " (" + OUTLOOK[n.outlook].toLowerCase() + ")") : null))),
+    sourceList(p.sources)
+  );
+  const pts = [(p.forksFrom && positions[p.forksFrom.nodeId]) || start, ...p.nodes.map((n) => positions[n.id])];
+  fitRect({ x0: Math.min(...pts.map((q) => q.x)) - 120, x1: Math.max(...pts.map((q) => q.x)) + 140,
+            y0: Math.min(...pts.map((q) => q.y)) - 130, y1: Math.max(...pts.map((q) => q.y)) + 130 }, true);
+}
+function openStart(el) {
+  select(el); setFocus(null);
+  showRight(h("div", { class: "eyebrow" }, "Today"), h("h3", {}, DATA.person?.currentRole || "Current position"),
+    h("p", {}, DATA.person?.summary || ""), h("p", { class: "muted" }, "Every path starts here. Click a step on the graph, or a path name, for details."));
+}
+function openNode(el, p, n) {
+  select(el); setFocus(p.id);
+  const kind = { role: "Role", cert: "Certification", education: "Study" }[n.type];
+  showRight(
+    h("div", { class: "eyebrow" }, `${kind} · Year ${n.year}`), h("h3", {}, n.title),
+    h("p", {}, h("span", { class: "badge" }, p.title)),
+    n.summary ? h("p", {}, n.summary) : null,
+    n.outlook ? [h("h4", {}, "Outlook to year 10"),
+      h("p", {}, h("span", { class: "badge " + n.outlook }, OUTLOOK[n.outlook]), n.outlookNote ? " " + n.outlookNote : "")] : null,
+    n.url ? h("p", {}, ext(n.url, "Official " + (n.provider ? n.provider + " " : "") + "page")) : null,
+    n.gate ? [h("h4", {}, "What gets you here"), h("p", {}, n.gate)] : null,
+    jobPostsBlock(n.jobPosts),
+    n.skills?.length ? [h("h4", {}, "Skills to build"), h("ul", { class: "plain" }, n.skills.map((s) => h("li", {}, s)))] : null,
+    n.certs?.length ? [h("h4", {}, "Certifications and study"), n.certs.map((c) =>
+      h("div", { class: "cert" }, h("b", {}, c.name), c.why ? h("span", {}, c.why) : null,
+        c.duration || c.cost ? h("small", {}, [c.duration, c.cost].filter(Boolean).join(" · ")) : null,
+        ext(c.url, "Official " + (c.provider ? c.provider + " " : "") + "page") || h("small", { class: "nolink" }, "Official link not verified yet — search the provider's site")))] : null,
+    sourceList(n.sources),
+    h("p", {}, h("button", { class: "link", onclick: () => openPath(p.id) }, "See the whole path"))
+  );
+  ensureVisible(positions[n.id].x, positions[n.id].y);
+}
+
+function setLeft(open) {
+  left.hidden = !open;
+  $("btn-overview").setAttribute("aria-pressed", String(open));
+}
+
+/* ---------- Pan and zoom ---------- */
+let view = { tx: 0, ty: 0, k: 1 };
+let userMoved = false, anim = null;
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const K_MIN = 0.15, K_MAX = 2.5;
+
+function apply() { world.setAttribute("transform", `translate(${view.tx} ${view.ty}) scale(${view.k})`); }
+
+function visibleRect() {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const r = { x0: 16, y0: 16, x1: vw - 16, y1: vh - 76 };
+  if (narrow()) {
+    if (!left.hidden) r.y0 = Math.min(vh * 0.55, left.offsetHeight + 24);
+    if (!right.hidden) r.y1 = Math.max(r.y0 + 120, vh - Math.min(vh * 0.45, right.offsetHeight) - 88);
+  } else {
+    if (!left.hidden) r.x0 = 16 + left.offsetWidth + 16;
+    if (!right.hidden) r.x1 = vw - 16 - right.offsetWidth - 16;
+  }
+  return r;
+}
+function animateTo(target) {
+  if (anim) cancelAnimationFrame(anim);
+  if (reduceMotion) { view = target; apply(); return; }
+  const from = { ...view }, t0 = performance.now(), dur = 380;
+  const step = (now) => {
+    const t = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - t, 3);
+    view = { tx: from.tx + (target.tx - from.tx) * e, ty: from.ty + (target.ty - from.ty) * e, k: from.k + (target.k - from.k) * e };
+    apply();
+    if (t < 1) anim = requestAnimationFrame(step);
+  };
+  anim = requestAnimationFrame(step);
+}
+function fitRect(b, animate) {
+  const v = visibleRect(), w = b.x1 - b.x0, hgt = b.y1 - b.y0;
+  const k = Math.max(K_MIN, Math.min(1.25, (v.x1 - v.x0) / w, (v.y1 - v.y0) / hgt));
+  const target = { k, tx: (v.x0 + v.x1) / 2 - ((b.x0 + b.x1) / 2) * k, ty: (v.y0 + v.y1) / 2 - ((b.y0 + b.y1) / 2) * k };
+  if (animate) animateTo(target); else { view = target; apply(); }
+}
+function fitAll(animate) {
+  const bb = world.getBBox();
+  if (narrow() && !userMoved) {
+    /* A whole-graph fit is unreadable on a phone. Start at a legible zoom on the first years of the top path; the person pans from there. */
+    const v = visibleRect(), k = 0.6;
+    const target = { k, tx: v.x0 + 28 - bb.x * k, ty: (v.y0 + v.y1) / 2 - ((start.y + laneY(0)) / 2) * k };
+    if (animate) animateTo(target); else { view = target; apply(); }
+    return;
+  }
+  fitRect({ x0: bb.x - 30, y0: bb.y - 30, x1: bb.x + bb.width + 30, y1: bb.y + bb.height + 30 }, animate);
+}
+function ensureVisible(wx, wy) {
+  const v = visibleRect(), sx = view.tx + wx * view.k, sy = view.ty + wy * view.k, m = 90;
+  if (sx > v.x0 + m && sx < v.x1 - m && sy > v.y0 + m && sy < v.y1 - m) return;
+  animateTo({ k: view.k, tx: (v.x0 + v.x1) / 2 - wx * view.k, ty: (v.y0 + v.y1) / 2 - wy * view.k });
+}
+function zoomAt(cx, cy, factor, animate) {
+  const k = Math.max(K_MIN, Math.min(K_MAX, view.k * factor)), r = k / view.k;
+  const target = { k, tx: cx - (cx - view.tx) * r, ty: cy - (cy - view.ty) * r };
+  userMoved = true;
+  if (animate) animateTo(target); else { view = target; apply(); }
+}
+
+const pointers = new Map();
+let dragStart = null, pinchDist = 0, moved = false;
+stage.addEventListener("pointerdown", (e) => {
+  if (anim) { cancelAnimationFrame(anim); anim = null; }
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pointers.size === 1) { dragStart = { x: e.clientX, y: e.clientY, tx: view.tx, ty: view.ty }; moved = false; }
+  if (pointers.size === 2) { const [a, b] = [...pointers.values()]; pinchDist = Math.hypot(a.x - b.x, a.y - b.y); moved = true; }
+});
+stage.addEventListener("pointermove", (e) => {
+  if (!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pointers.size === 2) {
+    const [a, b] = [...pointers.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+    if (pinchDist) zoomAt((a.x + b.x) / 2, (a.y + b.y) / 2, d / pinchDist);
+    pinchDist = d; return;
+  }
+  if (!dragStart) return;
+  const dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y;
+  if (!moved && Math.hypot(dx, dy) > 5) { moved = true; stage.classList.add("panning"); try { stage.setPointerCapture(e.pointerId); } catch (_) {} }
+  if (moved) { view.tx = dragStart.tx + dx; view.ty = dragStart.ty + dy; userMoved = true; apply(); }
+});
+function endPointer(e) {
+  pointers.delete(e.pointerId);
+  if (pointers.size < 2) pinchDist = 0;
+  if (pointers.size === 0) {
+    stage.classList.remove("panning");
+    if (moved) { suppressClick = true; setTimeout(() => { suppressClick = false; }, 0); }
+    else if (e.type === "pointerup" && !e.target.closest(".node, .lane-title")) clearSelection();
+    dragStart = null;
+  }
+}
+stage.addEventListener("pointerup", endPointer);
+stage.addEventListener("pointercancel", endPointer);
+stage.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)));
+}, { passive: false });
+
+$("btn-in").addEventListener("click", () => zoomAt(innerWidth / 2, innerHeight / 2, 1.3, true));
+$("btn-out").addEventListener("click", () => zoomAt(innerWidth / 2, innerHeight / 2, 1 / 1.3, true));
+$("btn-fit").addEventListener("click", () => { userMoved = false; fitAll(true); });
+$("btn-overview").addEventListener("click", () => { setLeft(left.hidden); });
+window.addEventListener("keydown", (e) => {
+  if (e.target.closest && e.target.closest("button, input, textarea")) { if (e.key === "Escape") clearSelection(); return; }
+  const step = 70;
+  if (e.key === "+" || e.key === "=") zoomAt(innerWidth / 2, innerHeight / 2, 1.2, true);
+  else if (e.key === "-") zoomAt(innerWidth / 2, innerHeight / 2, 1 / 1.2, true);
+  else if (e.key === "0") { userMoved = false; fitAll(true); }
+  else if (e.key === "Escape") clearSelection();
+  else if (e.key === "ArrowLeft") { view.tx += step; apply(); }
+  else if (e.key === "ArrowRight") { view.tx -= step; apply(); }
+  else if (e.key === "ArrowUp") { view.ty += step; apply(); }
+  else if (e.key === "ArrowDown") { view.ty -= step; apply(); }
+});
+window.addEventListener("resize", () => { if (!userMoved) fitAll(false); });
+
+/* ---------- Start ---------- */
+document.title = "Career path: " + (DATA.person?.name || "");
+buildLeft();
+setLeft(!narrow());
+fitAll(false);
+</script>
+</body>
+</html>
